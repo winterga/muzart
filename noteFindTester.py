@@ -43,7 +43,7 @@ class Spectrogram:
         self.nfft = nfft
     
     def spectro(self):
-        self.spec, self.freqs, self.t, self.im = plt.specgram(self.data, Fs=self.FS, NFFT=nfft, noverlap=round(0.75*nfft), cmap="rainbow")
+        self.spec, self.freqs, self.t, self.im = plt.specgram(self.data, Fs=self.FS, NFFT=self.nfft, noverlap=round(0.75*self.nfft), cmap="rainbow")
 
     def plot(self):
         plt.xlabel('Time')
@@ -67,7 +67,7 @@ class Spectrogram:
 
         # Step 6: Find the frequency bin with the maximum magnitude
         max_magnitude_index = np.argmax(spec_frame)
-        max_frequency = freqs[max_magnitude_index]
+        max_frequency = self.freqs[max_magnitude_index]
         return max_frequency
     
 class Translator:
