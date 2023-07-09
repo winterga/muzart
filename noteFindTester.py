@@ -4,10 +4,12 @@ import matplotlib.pyplot as plt
 from pydub import AudioSegment
 from scipy.io import wavfile
 from tempfile import mktemp
-from tempfile import NamedTemporaryFile
+from mutagen.mp3 import MP3
+# from tempfile import NamedTemporaryFile
+import argparse
 
 class FileLoader:
-    def __init__(self, filename):
+    def __init__(self, filename = "/vanderbiltCS/SyBBURE/SU23/with-one-hand-demo-song.mp3"):
         self.filename = filename
         # Step 1: Load the MP3 file
         # audio_file = AudioSegment.from_file("/vanderbiltCS/SyBBURE/SU23/with-one-hand-demo-song.mp3", format="mp3")
@@ -15,36 +17,33 @@ class FileLoader:
         #     tmp_filename = tmp_file.name
         #     audio_file.export(tmp_filename, format="wav")
 
-        audio_file = AudioSegment.from_file("/vanderbiltCS/SyBBURE/SU23/with-one-hand-demo-song.mp3", format="mp3")
+        audio_file = AudioSegment.from_file(filename, format="mp3")
         wname = mktemp(".wav") # use temp file
         audio_file.export(wname, format="wav")
 
         # Step 2: Read WAV file
         self.FS, self.data = wavfile.read(wname)
 
-        if data.ndim > 1:
-            data = data.mean(axis=1)  # Convert stereo to mono by taking the mean of channels
+        audio = MP3(filename)
+
+        self.duration = audio.info.length
 
 
     
     def getData(self):
-        return self.FS, self.data
+        if self.data.ndim > 1:
+            self.data = self.data.mean(axis=1)  # Convert stereo to mono by taking the mean of channels
+        return self.FS, self.data, self.duration
     
 
 
 class Spectrogram:
-    def __init__(self, FS, data, spec=None, freqs=None, nfft=None, t=None, im=None):
+    def __init__(self, FS, data, nfft=None):
         self.FS = FS
         self.data = data
-        self.spec = spec
-        self.freqs = freqs
-        self.t = t
-        self.im = im
         self.nfft = nfft
-    
-    def spectro(self):
         self.spec, self.freqs, self.t, self.im = plt.specgram(self.data, Fs=self.FS, NFFT=self.nfft, noverlap=round(0.75*self.nfft), cmap="rainbow")
-
+    
     def plot(self):
         plt.xlabel('Time')
         plt.ylabel('Frequency')
@@ -68,7 +67,7 @@ class Spectrogram:
         # Step 6: Find the frequency bin with the maximum magnitude
         max_magnitude_index = np.argmax(spec_frame)
         max_frequency = self.freqs[max_magnitude_index]
-        return max_frequency
+        return [start_time, end_time, max_frequency]
     
 class Translator:
     def __init__(self):
@@ -89,26 +88,32 @@ class Translator:
                          369.99, 392.0, 415.3, 440.0, 466.16, 493.88, 523.25]
 
 
-    def note(self, bottom, top, target):
+    def note(self, target):
         diffList = self.freqList-target
-        key = min(diffList) + target
+        key = min(diffList, key=abs) + target
         return self.noteLib[key]
-        # diff = 1000
-        # curDiff = 0
-        # if (bottom > top):
-        #     return -1
-        # else:
-        #     mid = (bottom + top) / 2
-        #     curDiff = abs(target - self.freqList[mid])
-            
-        #     if (curDiff < diff):
-        #         diff = curDiff
-            
-
-
     
 
-        index = len(self.noteLib)/2
+def options():
+    parser = argparse.ArgumentParser(description="Read image metadata")
+    parser.add_argument("-o", "--first", help="Input audio file.", required=True)
+    arg = parser.parse_args()
+    return arg
+
+# def main():
+# arg = options()
+fileKeeper = FileLoader()
+noteTranslator = Translator()
+
+FS, data, duration = fileKeeper.getData()
+spec = Spectrogram(FS=FS, data=data, nfft=8192)
+rangeArray = np.arange(0,round(duration),0.1)
+                       
+for i in range(1,rangeArray.size):
+    freqInfo = spec.getMaxFrequency(rangeArray[i-1],rangeArray[i])
+    print(noteTranslator.note(freqInfo[2]))
+
+
 
 
 
