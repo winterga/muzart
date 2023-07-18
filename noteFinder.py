@@ -9,7 +9,7 @@ from mutagen.mp3 import MP3
 import argparse
 
 class FileLoader:
-    def __init__(self, filename = "/vanderbiltCS/SyBBURE/SU23/with-one-hand-demo-song.mp3"):
+    def __init__(self, filename):
         self.filename = filename
         # Step 1: Load the MP3 file
         # audio_file = AudioSegment.from_file("/vanderbiltCS/SyBBURE/SU23/with-one-hand-demo-song.mp3", format="mp3")
@@ -66,8 +66,9 @@ class Spectrogram:
 
         # Step 6: Find the frequency bin with the maximum magnitude
         max_magnitude_index = np.argmax(spec_frame)
+        max_magnitude = spec_frame.flatten()[max_magnitude_index]
         max_frequency = self.freqs[max_magnitude_index]
-        return [start_time, end_time, max_frequency]
+        return [max_magnitude, max_frequency]
     
 class Translator:
     def __init__(self):
@@ -78,7 +79,7 @@ class Translator:
 92.5: 'F#2', 98.0: 'G2', 103.83: 'G#2', 110.0: 'A2', 116.54: 'A#2', 123.47: 'B2', 130.81: 'C3', 
 138.59: 'C#3', 146.83: 'D3', 155.56: 'D#3', 164.81: 'E3', 174.61: 'F3', 185.0: 'F#3', 
 196.0: 'G3', 207.65: 'G#3', 220.0: 'A3', 233.08: 'A#3', 246.94: 'B3', 261.63: 'C4', 
-277.18: 'C#4/Db4', 293.66: 'D4', 311.13: 'D#4', 329.63: 'E4', 349.23: 'F4', 369.99: 'F#4', 
+277.18: 'C#4/D4', 293.66: 'D4', 311.13: 'D#4', 329.63: 'E4', 349.23: 'F4', 369.99: 'F#4', 
 392.0: 'G4', 415.3: 'G#4', 440.0: 'A4', 466.16: 'A#4', 493.88: 'B4', 523.25: 'C5'}
         self.freqList = [16.35, 17.32, 18.35, 20.6, 21.83, 21.83, 24.5, 25.96, 27.5, 29.14, 30.87, 
                          32.7, 34.65, 36.71, 38.89, 41.2, 43.65, 46.25, 49.0, 51.91, 55.0, 58.27, 
@@ -93,6 +94,45 @@ class Translator:
         key = min(diffList, key=abs) + target
         return self.noteLib[key]
     
+class Muzart:
+    def __init__(self, file = '/vanderbiltCS/SyBBURE/SU23/with-one-hand-demo-song.mp3'):
+        self.fileKeeper = FileLoader(filename = file)
+        self.noteTranslator = Translator()
+        self.FS, self.data, self.duration = self.fileKeeper.getData()
+        self.spec = Spectrogram(FS=self.FS, data=self.data, nfft=8192)
+        self.rangeArray = np.arange(0,round(self.duration),0.1)
+        self.noteList = []
+        self.noteTime = []
+        # self.noteDuration = []
+        self.noteCount = 0
+        self.noteTimeCount = 0
+        self.noteCountList = []
+        self.noteDurationCountList = []
+        self.noteTimeCountList = []
+        
+    def run(self):
+        freqInfo = self.spec.getMaxFrequency(self.rangeArray[0],self.rangeArray[1])
+        note = self.noteTranslator.note(freqInfo[1])
+        prevNote = note
+        noteDuration = 0.1
+        curDecibel = freqInfo[0]
+        curMaxDecibel = curDecibel
+        for i in range(2,self.rangeArray.size):
+            freqInfo = self.spec.getMaxFrequency(self.rangeArray[i-1],self.rangeArray[i])
+            note = self.noteTranslator.note(freqInfo[1])
+            if (note[0] == prevNote[0] or abs(freqInfo[0]-curDecibel) < 1000):
+                noteDuration += 0.1
+                curDecibel = freqInfo[0]
+            else:
+                self.noteList.append([prevNote,curMaxDecibel,noteDuration])
+                curMaxDecibel = freqInfo[0]
+                prevNote = note
+                noteDuration = 0.1
+
+        self.noteList.append([prevNote,curMaxDecibel,noteDuration])
+
+        return self.noteList
+
 
 def options():
     parser = argparse.ArgumentParser(description="Read image metadata")
@@ -100,18 +140,27 @@ def options():
     arg = parser.parse_args()
     return arg
 
+muzart = Muzart(file = '/vanderbiltCS/SyBBURE/SU23/with-one-hand-demo-song.mp3')
+print(muzart.run())
+
+
 # def main():
 # arg = options()
-fileKeeper = FileLoader()
-noteTranslator = Translator()
+# fileKeeper = FileLoader()
+# noteTranslator = Translator()
 
-FS, data, duration = fileKeeper.getData()
-spec = Spectrogram(FS=FS, data=data, nfft=8192)
-rangeArray = np.arange(0,round(duration),0.1)
+# FS, data, duration = fileKeeper.getData()
+# spec = Spectrogram(FS=FS, data=data, nfft=8192)
+# spec.plot()
+# rangeArray = np.arange(0,round(duration),0.1)
                        
-for i in range(1,rangeArray.size):
-    freqInfo = spec.getMaxFrequency(rangeArray[i-1],rangeArray[i])
-    print(noteTranslator.note(freqInfo[2]))
+# prevNote = ''
+# for i in range(1,rangeArray.size):
+#     freqInfo = spec.getMaxFrequency(rangeArray[i-1],rangeArray[i])
+#     note = noteTranslator.note(freqInfo)
+#     if (note[0] != prevNote):
+#         prevNote = note[0]
+#     print(note)
 
 
 
