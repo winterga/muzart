@@ -50,7 +50,7 @@ from abc import ABC, abstractmethod
 
 
 class Shape(ABC):
-  def __init__(self, note = 0, intensity = 0, duration = 0)
+  def __init__(self, note = 0, intensity = 0, duration = 0):
     self.note = note
     self.intensity = intensity
     self.duration = duration
@@ -59,7 +59,7 @@ class Shape(ABC):
 
     self.turtObjs = [turtle.Turtle() for i in range(4)]
 
-    for obj in self.turtObjs
+    for obj in self.turtObjs:
         obj.hideturtle()
         obj.jim.pencolor('black')
         obj.jim.penup()
@@ -92,7 +92,7 @@ class Shape(ABC):
     sw.penup()
 
   #generate random coordinate based on the note
-  def getCoords():
+  def getCoords(self):
     noteDict = {
         "A": [[-271, 0], [144, 384]],
         "A#": [[-271, 0], [144, 384]],
@@ -108,7 +108,7 @@ class Shape(ABC):
         "G#": [[0, 96], [96, 144]],
     }
 
-    coordRange = noteDict[note]
+    coordRange = noteDict[self.note]
 
     xCoor = random.randint(coordRange[0][0], coordRange[0][1])
     yCoor = random.randint(coordRange[1][0], coordRange[1][1])
@@ -116,7 +116,7 @@ class Shape(ABC):
 
     return coordinates
 
-  def getRGB()
+  def getRGB(self):
     #using intensity for color
     r = "10"
     g = "20"
@@ -165,8 +165,8 @@ class Spiral(Shape):
     r, g, b = getRGB()
 
     #code for drawing a spiral
-    def drawSpiral(self, r, g, b)
-      for obj in self.turtObjs
+    def drawSpiral(self, r, g, b):
+      for obj in self.turtObjs:
         obj.pendown()
         obj.pencolor(r, g, b)
         for i in range(intensity):
@@ -221,7 +221,7 @@ class Oval(Shape):
     r, g, b = getRGB()
 
     def drawOval(self, r, g, b):
-      for obj in self.turtObjs
+      for obj in self.turtObjs:
         obj.pendown()
         obj.fillcolor(r, g, b)
         obj.begin_fill()
@@ -278,8 +278,8 @@ class Circle(Shape):
     xCoor,yCoorTemp = getCoords()
     r, g, b = getRGB()
 
-    def drawCircle()
-      for obj in self.turtObjs
+    def drawCircle():
+      for obj in self.turtObjs:
         obj.pendown()
         obj.fillcolor(r, g, b)
         obj.begin_fill()
@@ -333,8 +333,8 @@ class Triangle(Shape):
     xCoor,yCoorTemp = getCoords()
     r, g, b = getRGB()
 
-    def drawTriangle()
-      for obj in self.turtObjs
+    def drawTriangle():
+      for obj in self.turtObjs:
         obj.pendown()
         obj.fillcolor((r, g, b))
         obj.begin_fill()
@@ -392,8 +392,8 @@ class Square(Shape):
     xCoor,yCoorTemp = getCoords()
     r, g, b = getRGB()
 
-    def drawSquare(self, r, g, b)
-      for obj in self.turtObjs
+    def drawSquare(self, r, g, b):
+      for obj in self.turtObjs:
         obj.pendown()
         obj.fillcolor((r, g, b))
         obj.begin_fill()
@@ -452,8 +452,8 @@ class Pentagon(Shape):
     xCoor,yCoorTemp = getCoords()
     r, g, b = getRGB()
 
-    def drawPentagon(self, r, g, b)
-      for obj in self.turtObjs
+    def drawPentagon(self, r, g, b):
+      for obj in self.turtObjs:
         obj.pendown()
         obj.fillcolor((r, g, b))
         obj.begin_fill()
@@ -511,8 +511,8 @@ class Hexagon(Shape):
     xCoor,yCoorTemp = getCoords()
     r, g, b = getRGB()
 
-    def drawHexagon(self, r, g, b)
-      for obj in self.turtObjs
+    def drawHexagon(self, r, g, b):
+      for obj in self.turtObjs:
         obj.pendown()
         obj.fillcolor((r, g, b))
         obj.begin_fill()
@@ -570,8 +570,8 @@ class Heptagon(Shape):
     xCoor,yCoorTemp = getCoords()
     r, g, b = getRGB()
 
-    def drawHeptagon(self, r, g, b)
-      for obj in self.turtObjs
+    def drawHeptagon(self, r, g, b):
+      for obj in self.turtObjs:
         obj.pendown()
         obj.fillcolor((r, g, b))
         obj.begin_fill()
@@ -623,5 +623,5 @@ class Heptagon(Shape):
 
 
 
-
+turtle.mainloop()
 
