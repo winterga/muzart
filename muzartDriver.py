@@ -1,11 +1,9 @@
 import noteFinder
 import turtle
-import random
-# import objectOrientedShapes
 
-
-# in driver file
-screenSize = 960
-turtle.screensize(canvwidth=screenSize, canvheight=screenSize, bg="black")
+#code for initializing screen turtle object
 screen = turtle.Screen()
 screen.bgcolor('black')
+screen.setup(1920,1080)
+screen.tracer(0)
+screen.colormode(255)
