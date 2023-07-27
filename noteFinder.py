@@ -1,4 +1,3 @@
-import math
 import numpy as np
 import matplotlib.pyplot as plt
 from pydub import AudioSegment
@@ -88,7 +87,7 @@ class Translator:
             830.61: 'G#6', 880.00: 'A6', 932.33: 'A#6', 987.77: 'B6', 1046.50: 'C7', 1108.73: 'C#7',
             1174.66: 'D7', 1244.51: 'D#7', 1318.51: 'E7', 1396.91: 'F7', 1479.98: 'F#7', 1567.98: 'G7',
             1661.22: 'G#7', 1760.00: 'A7', 1864.66: 'A#7', 1975.53: 'B7', 2093.00: 'C8', 2217.46: 'C#8',
-            2349.32: 'D8', 2489.02: 'D#8'}
+            2349.32: 'D8', 2489.02: 'D#8', 3000: "null"}
 
         self.freqList = [16.35, 17.32, 18.35, 20.6, 21.83, 24.5, 25.96, 27.5, 29.14, 30.87,
             32.7, 34.65, 36.71, 38.89, 41.2, 43.65, 46.25, 49.0, 51.91, 55.0, 58.27,
@@ -98,7 +97,7 @@ class Translator:
             369.99, 392.0, 415.3, 440.0, 466.16, 493.88, 523.25, 554.37, 587.33, 622.25,
             659.25, 698.46, 739.99, 783.99, 830.61, 880.0, 932.33, 987.77, 1046.5, 1108.73,
             1174.66, 1244.51, 1318.51, 1396.91, 1479.98, 1567.98, 1661.22, 1760.0, 1864.66,
-            1975.53, 2093.0, 2217.46, 2349.32, 2489.02]
+            1975.53, 2093.0, 2217.46, 2349.32, 2489.02, 3000]
 
 
     def note(self, target):
@@ -143,6 +142,19 @@ class Muzart:
 
         self.noteList.append([prevNote,curMaxDecibel,noteDuration])
 
+        # normalize decibel power values to be between 0 and 1
+        decibelList = []
+        for i in range(len(self.noteList)):
+            decibelList.append(self.noteList[i][1])
+        max_power = max(decibelList)
+        min_power = min(decibelList)
+        normalized = [(x-min_power)/(max_power-min_power) for x in decibelList]
+
+        # add all normalized values to noteList
+        for i in range(len(self.noteList)):
+            self.noteList[i][1] = normalized[i] 
+
+            
         return self.noteList
 
 
@@ -152,7 +164,7 @@ def options():
     arg = parser.parse_args()
     return arg
 
-muzart = Muzart(file = '/vanderbiltCS/SyBBURE/SU23/with-one-hand-demo-song.mp3')
+muzart = Muzart(file = '/vanderbiltCS/SyBBURE/SU23/more-complicated-demo-song-2-both-hands.mp3')
 print(muzart.run())
 
 
