@@ -14,8 +14,6 @@ muzart = nf.Muzart(file='/vanderbiltCS/SyBBURE/SU23/more-complicated-demo-song-2
 #array of arrays ['note', string, intensity, duration]
 noteList = muzart.run()
 
-#part where we 
-
 def getNoteOctave(noteOctave): 
     if len(noteOctave) == 2: 
         return noteOctave[0], int(noteOctave[1])
@@ -26,7 +24,7 @@ def getNoteOctave(noteOctave):
 #need to add noteList and put it into object oriented shapes -- for loop 
 for item in noteList: 
     note, octave = getNoteOctave(item[0])
-    drawingObj = shapes.createShape(note, octave, item[1], item[2], screen = screen)
+    drawingObj = shapes.createShape(note=note, octave=octave, intensity=item[1], duration=item[2], screen=screen)
     drawingObj.draw()
 
 

@@ -13,18 +13,18 @@ import math
 
 #red color picker
 def scale_to_red(val):
-    return 255 * val
+    return int(round(255 * val))
 
 #green color picker
 def scale_to_green(val):
     if val <= 0.5:
-        return 255 * (1 - 2 * math.fabs(val - 0.5))
+        return int(round(255 * (1 - 2 * math.fabs(val - 0.5))))
     else:
-        return 255 * (2 * math.fabs(val - 0.5))
+        return int(round(255 * (2 * math.fabs(val - 0.5))))
 
 #blue color picker
 def scale_to_blue(val):
-    return 255 * (1 - val)
+    return int(round(255 * (1 - val)))
 
 # in driver file
 # screenSize = 960
@@ -34,7 +34,7 @@ def scale_to_blue(val):
 
 class Shape(ABC):
   def __init__(self, screen: turtle.Screen, note = "C", intensity = 0, duration = 0):
-    assert isinstance(screen, turtle.Screen), "You must pass in a turtle.Screen object!"
+    # assert isinstance(screen, turtle.Screen), "You must pass in a turtle.Screen object!"
     self.note = note
     self.intensity = intensity
     self.duration = duration
@@ -69,9 +69,11 @@ class Shape(ABC):
     self.fract = 0 #important
     self.yCoor = 0
     self.xCoor = 0
+    self.timePerSlice = 0.1
+    self.shapeDif = int((round(self.duration*100))/2)
 
     #cover shapes previously drawn; allows for visuals to appear smooth and not leave traces behind
-  def screenwipe():
+  def screenwipe(self):
     sw = turtle.Turtle()
     sw.hideturtle()
     sw.pencolor('white')
@@ -111,44 +113,44 @@ class Shape(ABC):
 
 
 # factory function to create different shapes
-def createShape(self, note, octave, intensity, duration, screen: turtle.Screen):
+def createShape(note, octave, intensity, duration, screen: turtle.Screen):
   if octave == 0:
-    return Spiral(note, intensity, duration, screen)
+    return Spiral(note=note, intensity=intensity, duration=duration, screen=screen)
 
   elif octave == 1:
-    return Oval(note, intensity, duration, screen)
+    return Oval(note=note, intensity=intensity, duration=duration, screen=screen)
 
   elif octave == 2:
-    return Circle(note, intensity, duration, screen)
+    return Circle(note=note, intensity=intensity, duration=duration, screen=screen)
 
   elif octave == 3:
-    return Triangle(note, intensity, duration, screen)
+    return Triangle(note=note, intensity=intensity, duration=duration, screen=screen)
 
   elif octave == 4:
-    return Square(note, intensity, duration, screen)
+    return Square(note=note, intensity=intensity, duration=duration, screen=screen)
 
   elif octave == 5:
-    return Pentagon(note, intensity, duration, screen)
+    return Pentagon(note=note, intensity=intensity, duration=duration, screen=screen)
 
   elif octave == 6:
-    return Hexagon(note, intensity, duration, screen)
+    return Hexagon(note=note, intensity=intensity, duration=duration, screen=screen)
 
   elif octave == 7:
-    return Heptagon(note, intensity, duration, screen)
+    return Heptagon(note=note, intensity=intensity, duration=duration, screen=screen)
 
 #spiral, oval, circle, then # of sides
 
 
 class Spiral(Shape):
-  def __init__(note, intensity, duration, screen):
-    super().__init__(note, intensity, duration, screen)
+  def __init__(self, note, intensity, duration, screen):
+    super().__init__(note=note, intensity=intensity, duration=duration, screen=screen)
 
   def draw(self):
     xCoorTemp, yCoorTemp = self.getCoords()
     r, g, b = self.getRGB()
 
     #code for drawing a spiral
-    def drawSpiral(self, r, g, b):
+    def drawSpiral(r, g, b):
       for obj in self.turtObjs:
         obj.pendown()
         obj.pencolor(r, g, b)
@@ -159,16 +161,18 @@ class Spiral(Shape):
         obj.penup()
 
     #initial placement of turtle objects
-    self.turtObjs[0].goto(self.xCoorTemp, self.yCoorTemp)
-    self.turtObjs[1].goto(-self.yCoorTemp, self.xCoorTemp)
-    self.turtObjs[2].goto(-self.xCoorTemp, -self.yCoorTemp)
-    self.turtObjs[3].goto(self.yCoorTemp, -self.xCoorTemp)
+    self.turtObjs[0].goto(xCoorTemp, yCoorTemp)
+    self.turtObjs[1].goto(-yCoorTemp, xCoorTemp)
+    self.turtObjs[2].goto(-xCoorTemp, -yCoorTemp)
+    self.turtObjs[3].goto(yCoorTemp, -xCoorTemp)
+
+    self.xCoor = xCoorTemp
 
     #code for growing shapes
-    for i in range((int(self.duration*100))/2):
-        exponent1 = 0.01*(i-1)
+    for i in range(self.shapeDif):
+        exponent1 = self.timePerSlice*(i-1)
         self.fract = self.fract + exponent1
-        self.ycoor = yCoorTemp - (self.fract)
+        self.yCoor = yCoorTemp - (self.fract)
         self.turtObjs[0].goto(self.xCoor, self.yCoor)
         self.turtObjs[1].goto(-self.yCoor, self.xCoor)
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
@@ -179,11 +183,11 @@ class Spiral(Shape):
 
     #variable reset
     exponents = 0
-    yCoorTemp2 = self.ycoor
+    yCoorTemp2 = self.yCoor
 
     #code for shrinking shapes
-    for z in range((int(self.duration*100))/2):
-        exponent1 = 0.01*(i-z)
+    for z in range(self.shapeDif):
+        exponent1 = self.timePerSlice*(i-z)
         self.fract = self.fract - exponent1
         exponents += exponent1
         self.yCoor = yCoorTemp2 + (exponents)
@@ -196,14 +200,14 @@ class Spiral(Shape):
         self.screenwipe()
 
 class Oval(Shape):
-  def __init__(note, intensity, duration, screen):
-    super().__init__(note, intensity, duration, screen)
+  def __init__(self, note, intensity, duration, screen):
+    super().__init__(note=note, intensity=intensity, duration=duration, screen=screen)
 
   def draw(self):
     xCoorTemp, yCoorTemp = self.getCoords()
     r, g, b = self.getRGB()
 
-    def drawOval(self, r, g, b):
+    def drawOval(r, g, b):
       for obj in self.turtObjs:
         obj.pendown()
         obj.fillcolor(r, g, b)
@@ -215,16 +219,18 @@ class Oval(Shape):
         obj.penup()
 
     #initial placement of turtle objects
-    self.turtObjs[0].goto(self.xCoorTemp, self.yCoorTemp)
-    self.turtObjs[1].goto(-self.yCoorTemp, self.xCoorTemp)
-    self.turtObjs[2].goto(-self.xCoorTemp, -self.yCoorTemp)
-    self.turtObjs[3].goto(self.yCoorTemp, -self.xCoorTemp)
+    self.turtObjs[0].goto(xCoorTemp, yCoorTemp)
+    self.turtObjs[1].goto(-yCoorTemp, xCoorTemp)
+    self.turtObjs[2].goto(-xCoorTemp, -yCoorTemp)
+    self.turtObjs[3].goto(yCoorTemp, -xCoorTemp)
+
+    self.xCoor = xCoorTemp
 
     #code for growing shapes
-    for i in range((int(self.duration*100))/2):
-        exponent1 = 0.01*(i-1)
+    for i in range(self.shapeDif):
+        exponent1 = self.timePerSlice*(i-1)
         self.fract = self.fract + exponent1
-        self.ycoor = yCoorTemp - (self.fract)
+        self.yCoor = yCoorTemp - (self.fract)
         self.turtObjs[0].goto(self.xCoor, self.yCoor)
         self.turtObjs[1].goto(-self.yCoor, self.xCoor)
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
@@ -235,11 +241,11 @@ class Oval(Shape):
 
     #variable reset
     exponents = 0
-    yCoorTemp2 = self.ycoor
+    yCoorTemp2 = self.yCoor
 
     #code for shrinking shapes
-    for z in range((int(self.duration*100))/2):
-        exponent1 = 0.01*(i-z)
+    for z in range(self.shapeDif):
+        exponent1 = self.timePerSlice*(i-z)
         self.fract = self.fract - exponent1
         exponents += exponent1
         self.yCoor = yCoorTemp2 + (exponents)
@@ -254,14 +260,14 @@ class Oval(Shape):
 
 #can we just have a general polygon shape or should we do square, triangle, pentagon, etc
 class Circle(Shape):
-  def __init__(note, intensity, duration, screen):
-    super().__init__(note, intensity, duration, screen)
+  def __init__(self, note, intensity, duration, screen):
+    super().__init__(note=note, intensity=intensity, duration=duration, screen=screen)
 
   def draw(self):
     xCoorTemp, yCoorTemp = self.getCoords()
     r, g, b = self.getRGB()
 
-    def drawCircle():
+    def drawCircle(r, g, b):
       for obj in self.turtObjs:
         obj.pendown()
         obj.fillcolor(r, g, b)
@@ -271,16 +277,18 @@ class Circle(Shape):
         obj.penup()
 
     #initial placement of turtle objects
-    self.turtObjs[0].goto(self.xCoorTemp, self.yCoorTemp)
-    self.turtObjs[1].goto(-self.yCoorTemp, self.xCoorTemp)
-    self.turtObjs[2].goto(-self.xCoorTemp, -self.yCoorTemp)
-    self.turtObjs[3].goto(self.yCoorTemp, -self.xCoorTemp)
+    self.turtObjs[0].goto(xCoorTemp, yCoorTemp)
+    self.turtObjs[1].goto(-yCoorTemp, xCoorTemp)
+    self.turtObjs[2].goto(-xCoorTemp, -yCoorTemp)
+    self.turtObjs[3].goto(yCoorTemp, -xCoorTemp)
+
+    self.xCoor = xCoorTemp
 
     #code for growing shapes
-    for i in range((int(self.duration*100))/2):
-        exponent1 = 0.01*(i-1)
+    for i in range(self.shapeDif):
+        exponent1 = self.timePerSlice*(i-1)
         self.fract = self.fract + exponent1
-        self.ycoor = yCoorTemp - (self.fract)
+        self.yCoor = yCoorTemp - (self.fract)
         self.turtObjs[0].goto(self.xCoor, self.yCoor)
         self.turtObjs[1].goto(-self.yCoor, self.xCoor)
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
@@ -291,11 +299,11 @@ class Circle(Shape):
 
     #variable reset
     exponents = 0
-    yCoorTemp2 = self.ycoor
+    yCoorTemp2 = self.yCoor
 
     #code for shrinking shapes
-    for z in range((int(self.duration*100))/2):
-        exponent1 = 0.01*(i-z)
+    for z in range(self.shapeDif):
+        exponent1 = self.timePerSlice*(i-z)
         self.fract = self.fract - exponent1
         exponents += exponent1
         self.yCoor = yCoorTemp2 + (exponents)
@@ -309,14 +317,14 @@ class Circle(Shape):
 
 
 class Triangle(Shape):
-  def __init__(note, intensity, duration, screen):
-    super().__init__(note, intensity, duration, screen)
+  def __init__(self, note, intensity, duration, screen):
+    super().__init__(note=note, intensity=intensity, duration=duration, screen=screen)
 
   def draw(self):
     xCoorTemp, yCoorTemp = self.getCoords()
     r, g, b = self.getRGB()
 
-    def drawTriangle():
+    def drawTriangle(r, g, b):
       for obj in self.turtObjs:
         obj.pendown()
         obj.fillcolor((r, g, b))
@@ -331,16 +339,18 @@ class Triangle(Shape):
         obj.penup()
 
     #initial placement of turtle objects
-    self.turtObjs[0].goto(self.xCoorTemp, self.yCoorTemp)
-    self.turtObjs[1].goto(-self.yCoorTemp, self.xCoorTemp)
-    self.turtObjs[2].goto(-self.xCoorTemp, -self.yCoorTemp)
-    self.turtObjs[3].goto(self.yCoorTemp, -self.xCoorTemp)
+    self.turtObjs[0].goto(xCoorTemp, yCoorTemp)
+    self.turtObjs[1].goto(-yCoorTemp, xCoorTemp)
+    self.turtObjs[2].goto(-xCoorTemp, -yCoorTemp)
+    self.turtObjs[3].goto(yCoorTemp, -xCoorTemp)
+
+    self.xCoor = xCoorTemp
 
     #code for growing shapes
-    for i in range((int(self.duration*100))/2):
-        exponent1 = 0.01*(i-1)
+    for i in range(self.shapeDif):
+        exponent1 = self.timePerSlice*(i-1)
         self.fract = self.fract + exponent1
-        self.ycoor = yCoorTemp - (self.fract)
+        self.yCoor = yCoorTemp - (self.fract)
         self.turtObjs[0].goto(self.xCoor, self.yCoor)
         self.turtObjs[1].goto(-self.yCoor, self.xCoor)
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
@@ -351,11 +361,11 @@ class Triangle(Shape):
 
     #variable reset
     exponents = 0
-    yCoorTemp2 = self.ycoor
+    yCoorTemp2 = self.yCoor
 
     #code for shrinking shapes
-    for z in range((int(self.duration*100))/2):
-        exponent1 = 0.01*(i-z)
+    for z in range(self.shapeDif):
+        exponent1 = self.timePerSlice*(i-z)
         self.fract = self.fract - exponent1
         exponents += exponent1
         self.yCoor = yCoorTemp2 + (exponents)
@@ -368,14 +378,14 @@ class Triangle(Shape):
         self.screenwipe()
 
 class Square(Shape):
-  def __init__(note, intensity, duration, screen):
-    super().__init__(note, intensity, duration, screen)
+  def __init__(self, note, intensity, duration, screen):
+    super().__init__(note=note, intensity=intensity, duration=duration, screen=screen)
 
   def draw(self):
     xCoorTemp, yCoorTemp = self.getCoords()
     r, g, b = self.getRGB()
 
-    def drawSquare(self, r, g, b):
+    def drawSquare(r, g, b):
       for obj in self.turtObjs:
         obj.pendown()
         obj.fillcolor((r, g, b))
@@ -390,16 +400,18 @@ class Square(Shape):
         obj.penup()
 
     #initial placement of turtle objects
-    self.turtObjs[0].goto(self.xCoorTemp, self.yCoorTemp)
-    self.turtObjs[1].goto(-self.yCoorTemp, self.xCoorTemp)
-    self.turtObjs[2].goto(-self.xCoorTemp, -self.yCoorTemp)
-    self.turtObjs[3].goto(self.yCoorTemp, -self.xCoorTemp)
+    self.turtObjs[0].goto(xCoorTemp, yCoorTemp)
+    self.turtObjs[1].goto(-yCoorTemp, xCoorTemp)
+    self.turtObjs[2].goto(-xCoorTemp, -yCoorTemp)
+    self.turtObjs[3].goto(yCoorTemp, -xCoorTemp)
+
+    self.xCoor = xCoorTemp
 
     #code for growing shapes
-    for i in range((int(self.duration*100))/2):
-        exponent1 = 0.01*(i-1)
+    for i in range(self.shapeDif):
+        exponent1 = self.timePerSlice*(i-1)
         self.fract = self.fract + exponent1
-        self.ycoor = yCoorTemp - (self.fract)
+        self.yCoor = yCoorTemp - (self.fract)
         self.turtObjs[0].goto(self.xCoor, self.yCoor)
         self.turtObjs[1].goto(-self.yCoor, self.xCoor)
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
@@ -410,11 +422,11 @@ class Square(Shape):
 
     #variable reset
     exponents = 0
-    yCoorTemp2 = self.ycoor
+    yCoorTemp2 = self.yCoor
 
     #code for shrinking shapes
-    for z in range((int(self.duration*100))/2):
-        exponent1 = 0.01*(i-z)
+    for z in range(self.shapeDif):
+        exponent1 = self.timePerSlice*(i-z)
         self.fract = self.fract - exponent1
         exponents += exponent1
         self.yCoor = yCoorTemp2 + (exponents)
@@ -428,14 +440,14 @@ class Square(Shape):
 
 
 class Pentagon(Shape):
-  def __init__(note, intensity, duration, screen):
-    super().__init__(note, intensity, duration, screen)
+  def __init__(self, note, intensity, duration, screen):
+    super().__init__(note=note, intensity=intensity, duration=duration, screen=screen)
 
   def draw(self):
     xCoorTemp, yCoorTemp = self.getCoords()
     r, g, b = self.getRGB()
 
-    def drawPentagon(self, r, g, b):
+    def drawPentagon(r, g, b):
       for obj in self.turtObjs:
         obj.pendown()
         obj.fillcolor((r, g, b))
@@ -450,16 +462,18 @@ class Pentagon(Shape):
         obj.penup()
 
     #initial placement of turtle objects
-    self.turtObjs[0].goto(self.xCoorTemp, self.yCoorTemp)
-    self.turtObjs[1].goto(-self.yCoorTemp, self.xCoorTemp)
-    self.turtObjs[2].goto(-self.xCoorTemp, -self.yCoorTemp)
-    self.turtObjs[3].goto(self.yCoorTemp, -self.xCoorTemp)
+    self.turtObjs[0].goto(xCoorTemp, yCoorTemp)
+    self.turtObjs[1].goto(-yCoorTemp, xCoorTemp)
+    self.turtObjs[2].goto(-xCoorTemp, -yCoorTemp)
+    self.turtObjs[3].goto(yCoorTemp, -xCoorTemp)
+
+    self.xCoor = xCoorTemp
 
     #code for growing shapes
-    for i in range((int(self.duration*100))/2):
-        exponent1 = 0.01*(i-1)
+    for i in range(self.shapeDif):
+        exponent1 = self.timePerSlice*(i-1)
         self.fract = self.fract + exponent1
-        self.ycoor = yCoorTemp - (self.fract)
+        self.yCoor = yCoorTemp - (self.fract)
         self.turtObjs[0].goto(self.xCoor, self.yCoor)
         self.turtObjs[1].goto(-self.yCoor, self.xCoor)
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
@@ -470,11 +484,11 @@ class Pentagon(Shape):
 
     #variable reset
     exponents = 0
-    yCoorTemp2 = self.ycoor
+    yCoorTemp2 = self.yCoor
 
     #code for shrinking shapes
-    for z in range((int(self.duration*100))/2):
-        exponent1 = 0.01*(i-z)
+    for z in range(self.shapeDif):
+        exponent1 = self.timePerSlice*(i-z)
         self.fract = self.fract - exponent1
         exponents += exponent1
         self.yCoor = yCoorTemp2 + (exponents)
@@ -487,14 +501,14 @@ class Pentagon(Shape):
         self.screenwipe()
 
 class Hexagon(Shape):
-  def __init__(note, intensity, duration, screen):
-    super().__init__(note, intensity, duration, screen)
+  def __init__(self, note, intensity, duration, screen):
+    super().__init__(note=note, intensity=intensity, duration=duration, screen=screen)
 
   def draw(self):
     xCoorTemp, yCoorTemp = self.getCoords()
     r, g, b = self.getRGB()
 
-    def drawHexagon(self, r, g, b):
+    def drawHexagon(r, g, b):
       for obj in self.turtObjs:
         obj.pendown()
         obj.fillcolor((r, g, b))
@@ -509,16 +523,17 @@ class Hexagon(Shape):
         obj.penup()
 
     #initial placement of turtle objects
-    self.turtObjs[0].goto(self.xCoorTemp, self.yCoorTemp)
-    self.turtObjs[1].goto(-self.yCoorTemp, self.xCoorTemp)
-    self.turtObjs[2].goto(-self.xCoorTemp, -self.yCoorTemp)
-    self.turtObjs[3].goto(self.yCoorTemp, -self.xCoorTemp)
+    self.turtObjs[0].goto(xCoorTemp, yCoorTemp)
+    self.turtObjs[1].goto(-yCoorTemp, xCoorTemp)
+    self.turtObjs[2].goto(-xCoorTemp, -yCoorTemp)
+    self.turtObjs[3].goto(yCoorTemp, -xCoorTemp)
 
+    self.xCoor = xCoorTemp
     #code for growing shapes
-    for i in range((int(self.duration*100))/2):
-        exponent1 = 0.01*(i-1)
+    for i in range(self.shapeDif):
+        exponent1 = self.timePerSlice*(i-1)
         self.fract = self.fract + exponent1
-        self.ycoor = yCoorTemp - (self.fract)
+        self.yCoor = yCoorTemp - (self.fract)
         self.turtObjs[0].goto(self.xCoor, self.yCoor)
         self.turtObjs[1].goto(-self.yCoor, self.xCoor)
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
@@ -529,11 +544,11 @@ class Hexagon(Shape):
 
     #variable reset
     exponents = 0
-    yCoorTemp2 = self.ycoor
+    yCoorTemp2 = self.yCoor
 
     #code for shrinking shapes
-    for z in range((int(self.duration*100))/2):
-        exponent1 = 0.01*(i-z)
+    for z in range(self.shapeDif):
+        exponent1 = self.timePerSlice*(i-z)
         self.fract = self.fract - exponent1
         exponents += exponent1
         self.yCoor = yCoorTemp2 + (exponents)
@@ -546,14 +561,14 @@ class Hexagon(Shape):
         self.screenwipe()
 
 class Heptagon(Shape):
-  def __init__(note, intensity, duration, screen):
-    super().__init__(note, intensity, duration, screen)
+  def __init__(self, note, intensity, duration, screen):
+    super().__init__(note=note, intensity=intensity, duration=duration, screen=screen)
 
   def draw(self):
     xCoorTemp, yCoorTemp = self.getCoords()
     r, g, b = self.getRGB()
 
-    def drawHeptagon(self, r, g, b):
+    def drawHeptagon(r, g, b):
       for obj in self.turtObjs:
         obj.pendown()
         obj.fillcolor((r, g, b))
@@ -568,16 +583,17 @@ class Heptagon(Shape):
         obj.penup()
 
     #initial placement of turtle objects
-    self.turtObjs[0].goto(self.xCoorTemp, self.yCoorTemp)
-    self.turtObjs[1].goto(-self.yCoorTemp, self.xCoorTemp)
-    self.turtObjs[2].goto(-self.xCoorTemp, -self.yCoorTemp)
-    self.turtObjs[3].goto(self.yCoorTemp, -self.xCoorTemp)
+    self.turtObjs[0].goto(xCoorTemp, yCoorTemp)
+    self.turtObjs[1].goto(-yCoorTemp, xCoorTemp)
+    self.turtObjs[2].goto(-xCoorTemp, -yCoorTemp)
+    self.turtObjs[3].goto(yCoorTemp, -xCoorTemp)
 
+    self.xCoor = xCoorTemp
     #code for growing shapes
-    for i in range((int(self.duration*100))/2):
-        exponent1 = 0.01*(i-1)
+    for i in range(self.shapeDif):
+        exponent1 = self.timePerSlice*(i-1)
         self.fract = self.fract + exponent1
-        self.ycoor = yCoorTemp - (self.fract)
+        self.yCoor = yCoorTemp - (self.fract)
         self.turtObjs[0].goto(self.xCoor, self.yCoor)
         self.turtObjs[1].goto(-self.yCoor, self.xCoor)
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
@@ -588,11 +604,11 @@ class Heptagon(Shape):
 
     #variable reset
     exponents = 0
-    yCoorTemp2 = self.ycoor
+    yCoorTemp2 = self.yCoor
 
     #code for shrinking shapes
-    for z in range((int(self.duration*100))/2):
-        exponent1 = 0.01*(i-z)
+    for z in range(self.shapeDif):
+        exponent1 = self.timePerSlice*(i-z)
         self.fract = self.fract - exponent1
         exponents += exponent1
         self.yCoor = yCoorTemp2 + (exponents)
