@@ -20,6 +20,14 @@ def getNoteOctave(noteOctave):
     return noteOctave[0:2], int(noteOctave[2])
 
 
+drawBox = turtle.Turtle()
+drawBox.penup() 
+drawBox.goto(-150, -150)
+drawBox.pendown()
+
+for i in range(4): 
+    drawBox.forward(300)
+    drawBox.left(90)
 
 #need to add noteList and put it into object oriented shapes -- for loop 
 for item in noteList: 
