@@ -94,7 +94,7 @@ class Shape(ABC):
     self.yCoor = 0
     self.xCoor = 0
     self.timePerSlice = 0.01 #added radial length every slice
-    self.shapeDif = int((round(self.duration*10))/2)
+    self.shapeDif = int((round(self.duration*30))/2)
     self.fps = 60
     self.frame_time = 1/self.fps # 0.1 for 10 fps 
 

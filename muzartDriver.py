@@ -24,8 +24,9 @@ for i in range(4):
 
 screen.update()
 
+filename = '/vanderbiltCS/SyBBURE/SU23/with-one-hand-demo-song.mp3'
 #extracting data from note finder file 
-muzart = nf.Muzart(file='/vanderbiltCS/SyBBURE/SU23/with-one-hand-demo-song.mp3')
+muzart = nf.Muzart(file=filename)
 #array of arrays ['note', string, intensity, duration]
 noteList = muzart.run()
 print(noteList)
@@ -36,7 +37,7 @@ def getNoteOctave(noteOctave):
     return noteOctave[0:2], int(noteOctave[2])
 
 pygame.init() 
-pygame.mixer.music.load('/vanderbiltCS/SyBBURE/SU23/with-one-hand-demo-song.mp3')
+pygame.mixer.music.load(filename)
 pygame.mixer.music.play()
 
 
