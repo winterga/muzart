@@ -39,6 +39,10 @@ pygame.init()
 pygame.mixer.music.load('/vanderbiltCS/SyBBURE/SU23/with-one-hand-demo-song.mp3')
 pygame.mixer.music.play()
 
+
+
+
+
 #need to add noteList and put it into object oriented shapes -- for loop 
 for item in noteList: 
     note, octave = getNoteOctave(item[0])
