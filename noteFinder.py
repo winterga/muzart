@@ -164,8 +164,8 @@ def options():
     arg = parser.parse_args()
     return arg
 
-muzart = Muzart(file = '/vanderbiltCS/SyBBURE/SU23/more-complicated-demo-song-2-both-hands.mp3')
-print(muzart.run())
+# muzart = Muzart(file = '/vanderbiltCS/SyBBURE/SU23/more-complicated-demo-song-2-both-hands.mp3')
+# print(muzart.run())
 
 
 # def main():

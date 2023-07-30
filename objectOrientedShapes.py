@@ -10,6 +10,7 @@ from abc import ABC, abstractmethod
 import turtle
 import random
 import math
+import time
 
 # function to scale intensity values to red value
 def scale_to_red(val):
@@ -17,10 +18,10 @@ def scale_to_red(val):
 
 # function to scale intensity values to green value
 def scale_to_green(val):
-    if val <= 0.5:
-        return int(round(255 * (1 - 2 * math.fabs(val - 0.5))))
-    else:
-        return int(round(255 * (2 * math.fabs(val - 0.5))))
+    # if val <= 0.5:
+    return int(round(255 * (1 - 2 * math.fabs(val - 0.5))))
+    # else:
+    #     return int(round(255 * (2 * math.fabs(val - 0.5))))
 
 # function to scale intensity values to blue value
 def scale_to_blue(val):
@@ -63,18 +64,18 @@ class Shape(ABC):
     self.duration = duration
     self.screen = screen
     self.noteDict = {
-        "A": [[-271, 0], [144, 384]],
-        "A#": [[-271, 0], [144, 384]],
-        "B": [[-271, 0], [144, 384]],
-        "C": [[-96, 0], [96, 144]],
-        "C#": [[-96, 0], [96, 144]],
-        "D": [[-96, 0], [96, 144]],
-        "D#": [[0, 271], [144, 384]],
-        "E": [[0, 271], [144, 384]],
-        "F": [[0, 271], [144, 384]],
-        "F#": [[0, 96], [96, 144]],
-        "G": [[0, 96], [96, 144]],
-        "G#": [[0, 96], [96, 144]],
+        "A": [[-400, 0], [295, 450]],
+        "A#": [[-400, 0], [295, 450]],
+        "B": [[-400, 0], [295, 450]],
+        "C": [[-400, 0], [295, 450]],
+        "C#": [[0, 400], [295, 450]],
+        "D": [[0, 400], [295, 450]],
+        "D#": [[0, 400], [295, 450]],
+        "E": [[0, 400], [295, 450]],
+        "F": [[-100, 100], [150, 295]],
+        "F#": [[-100, 100], [150, 295]],
+        "G": [[-100, 100], [150, 295]],
+        "G#": [[-100, 100], [150, 295]],
     }
     
     #create turtle objects
@@ -88,31 +89,37 @@ class Shape(ABC):
 
    #initialize filler vairables
 
-    self.rad = 1
+    self.rad = 15
     self.fract = 0 #important
     self.yCoor = 0
     self.xCoor = 0
-    self.timePerSlice = 0.1
-    self.shapeDif = int((round(self.duration*100))/2)
+    self.timePerSlice = 0.01 #added radial length every slice
+    self.shapeDif = int((round(self.duration*10))/2)
+    self.fps = 60
+    self.frame_time = 1/self.fps # 0.1 for 10 fps 
 
     #cover shapes previously drawn; allows for visuals to appear smooth and not leave traces behind
   def screenwipe(self):
-    sw = turtle.Turtle()
-    sw.hideturtle()
-    sw.pencolor('white')
-    sw.penup()
-    sw.speed(0)
-    sw.goto(-960, -540)
-    sw.pendown()
-    sw.fillcolor('black')
-    sw.begin_fill()
-    for y in range(2):
-        sw.fd(1920)
-        sw.left(90)
-        sw.fd(1080)
-        sw.left(90)
-    sw.end_fill()
-    sw.penup()
+    self.turtObjs[0].clear()
+    self.turtObjs[1].clear()
+    self.turtObjs[2].clear()
+    self.turtObjs[3].clear()
+  #   sw = turtle.Turtle()
+  #   sw.hideturtle()
+  #   sw.pencolor('white')
+  #   sw.penup()
+  #   sw.speed(0)
+  #   sw.goto(-960, -540)
+  #   sw.pendown()
+  #   sw.fillcolor('black')
+  #   sw.begin_fill()
+  #   for y in range(2):
+  #       sw.fd(1920)
+  #       sw.left(90)
+  #       sw.fd(1080)
+  #       sw.left(90)
+  #   sw.end_fill()
+  #   sw.penup()
 
   #generate random coordinate based on the note
   def getCoords(self):
@@ -133,7 +140,6 @@ class Shape(ABC):
   @abstractmethod
   def draw(self):
     pass
-
 
 # factory function to create different shapes
 def createShape(note, octave, intensity, duration, screen: turtle.Screen):
@@ -201,6 +207,7 @@ class Spiral(Shape):
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
         self.turtObjs[3].goto(self.yCoor, -self.xCoor)
         drawSpiral(r, g, b)
+        time.sleep(self.frame_time)
         self.screen.update()
         self.screenwipe()
 
@@ -219,6 +226,7 @@ class Spiral(Shape):
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
         self.turtObjs[3].goto(self.yCoor, -self.xCoor)
         drawSpiral(r, g, b)
+        time.sleep(self.frame_time)
         self.screen.update()
         self.screenwipe()
 
@@ -259,6 +267,7 @@ class Oval(Shape):
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
         self.turtObjs[3].goto(self.yCoor, -self.xCoor)
         drawOval(r, g, b)
+        time.sleep(self.frame_time)
         self.screen.update()
         self.screenwipe()
 
@@ -277,6 +286,7 @@ class Oval(Shape):
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
         self.turtObjs[3].goto(self.yCoor, -self.xCoor)
         drawOval(r, g, b)
+        time.sleep(self.frame_time)
         self.screen.update()
         self.screenwipe()
 
@@ -317,6 +327,7 @@ class Circle(Shape):
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
         self.turtObjs[3].goto(self.yCoor, -self.xCoor)
         drawCircle(r, g, b)
+        time.sleep(self.frame_time)
         self.screen.update()
         self.screenwipe()
 
@@ -335,6 +346,7 @@ class Circle(Shape):
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
         self.turtObjs[3].goto(self.yCoor, -self.xCoor)
         drawCircle(r, g, b)
+        time.sleep(self.frame_time)
         self.screen.update()
         self.screenwipe()
 
@@ -379,6 +391,7 @@ class Triangle(Shape):
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
         self.turtObjs[3].goto(self.yCoor, -self.xCoor)
         drawTriangle(r, g, b)
+        time.sleep(self.frame_time)
         self.screen.update()
         self.screenwipe()
 
@@ -397,6 +410,7 @@ class Triangle(Shape):
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
         self.turtObjs[3].goto(self.yCoor, -self.xCoor)
         drawTriangle(r, g, b)
+        time.sleep(self.frame_time)
         self.screen.update()
         self.screenwipe()
 
@@ -440,6 +454,7 @@ class Square(Shape):
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
         self.turtObjs[3].goto(self.yCoor, -self.xCoor)
         drawSquare(r, g, b)
+        time.sleep(self.frame_time)
         self.screen.update()
         self.screenwipe()
 
@@ -458,6 +473,7 @@ class Square(Shape):
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
         self.turtObjs[3].goto(self.yCoor, -self.xCoor)
         drawSquare(r, g, b)
+        time.sleep(self.frame_time)
         self.screen.update()
         self.screenwipe()
 
@@ -502,6 +518,7 @@ class Pentagon(Shape):
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
         self.turtObjs[3].goto(self.yCoor, -self.xCoor)
         drawPentagon(r, g, b)
+        time.sleep(self.frame_time)
         self.screen.update()
         self.screenwipe()
 
@@ -520,6 +537,7 @@ class Pentagon(Shape):
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
         self.turtObjs[3].goto(self.yCoor, -self.xCoor)
         drawPentagon(r, g, b)
+        time.sleep(self.frame_time)
         self.screen.update()
         self.screenwipe()
 
@@ -562,6 +580,7 @@ class Hexagon(Shape):
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
         self.turtObjs[3].goto(self.yCoor, -self.xCoor)
         drawHexagon(r, g, b)
+        time.sleep(self.frame_time)
         self.screen.update()
         self.screenwipe()
 
@@ -580,6 +599,7 @@ class Hexagon(Shape):
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
         self.turtObjs[3].goto(self.yCoor, -self.xCoor)
         drawHexagon(r, g, b)
+        time.sleep(self.frame_time)
         self.screen.update()
         self.screenwipe()
 
@@ -622,6 +642,7 @@ class Heptagon(Shape):
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
         self.turtObjs[3].goto(self.yCoor, -self.xCoor)
         drawHeptagon(r, g, b)
+        time.sleep(self.frame_time)
         self.screen.update()
         self.screenwipe()
 
@@ -640,6 +661,7 @@ class Heptagon(Shape):
         self.turtObjs[2].goto(-self.xCoor, -self.yCoor)
         self.turtObjs[3].goto(self.yCoor, -self.xCoor)
         drawHeptagon(r, g, b)
+        time.sleep(self.frame_time)
         self.screen.update()
         self.screenwipe()
 
