@@ -11,26 +11,49 @@ import turtle
 import random
 import math
 
-#red color picker
+# function to scale intensity values to red value
 def scale_to_red(val):
     return int(round(255 * val))
 
-#green color picker
+# function to scale intensity values to green value
 def scale_to_green(val):
     if val <= 0.5:
         return int(round(255 * (1 - 2 * math.fabs(val - 0.5))))
     else:
         return int(round(255 * (2 * math.fabs(val - 0.5))))
 
-#blue color picker
+# function to scale intensity values to blue value
 def scale_to_blue(val):
     return int(round(255 * (1 - val)))
 
-# in driver file
-# screenSize = 960
-# turtle.screensize(canvwidth=screenSize, canvheight=screenSize, bg="black")
-# screen = turtle.Screen()
-# screen.bgcolor('black')
+"""Abstract Base Class for Shape hierarchy
+
+    Defines a common interface for all shapes in the hierarchy.
+
+    Parameters
+    ----------
+    arg1 : turtle.Screen
+        turtle screen object taken from turtle module - this is the canvas on which the shapes will be drawn
+    arg2 : str
+        note value of a given time period for an audio file - describes the location of the shape on the canvas
+    arg3 : float
+        intensity value of a given time period for an audio file - describes the color of the shape on the canvas
+    arg4 : float
+        time that a given note is played for in an audio file - describes the size of the shape on the canvas
+
+    See Also
+    --------
+    Oval
+    Sprial
+    Circle
+    Triangle
+    Square
+    Pentagon
+    Hexagon
+    Heptagon
+    Octagon
+
+"""
 
 class Shape(ABC):
   def __init__(self, screen: turtle.Screen, note = "C", intensity = 0, duration = 0):
