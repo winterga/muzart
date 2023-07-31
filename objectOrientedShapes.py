@@ -89,13 +89,33 @@ class Shape(ABC):
 
    #initialize filler vairables
 
+  #   SETTINGS: working for /vanderbiltCS/SyBBURE/SU23/more-complicated-demo-song-2-both-hands.mp3
+  #   self.rad = 15
+  #   self.fract = 0 #important
+  #   self.yCoor = 0
+  #   self.xCoor = 0
+  #   self.timePerSlice = 0.01 #added radial length every slice
+  #   self.shapeDif = int((round(self.duration*30))/2)
+  #   self.fps = 33
+  #   self.frame_time = 1/self.fps # 0.1 for 10 fps 
+
+  # SETTINGS: working for '/vanderbiltCS/SyBBURE/SU23/Owl-City-Fireflies-m8.mp3' and '/vanderbiltCS/SyBBURE/SU23/dancing-queen.mp3'
+    # self.rad = 15
+    # self.fract = 0 #important
+    # self.yCoor = 0
+    # self.xCoor = 0
+    # self.timePerSlice = 0.01 #added radial length every slice
+    # self.shapeDif = int((round(self.duration*30))/2)
+    # self.fps = 36
+    # self.frame_time = 1/self.fps # 0.1 for 10 fps 
+
     self.rad = 15
     self.fract = 0 #important
     self.yCoor = 0
     self.xCoor = 0
     self.timePerSlice = 0.01 #added radial length every slice
     self.shapeDif = int((round(self.duration*30))/2)
-    self.fps = 60
+    self.fps = 36
     self.frame_time = 1/self.fps # 0.1 for 10 fps 
 
     #cover shapes previously drawn; allows for visuals to appear smooth and not leave traces behind

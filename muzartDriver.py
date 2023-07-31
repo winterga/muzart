@@ -24,7 +24,7 @@ for i in range(4):
 
 screen.update()
 
-filename = '/vanderbiltCS/SyBBURE/SU23/with-one-hand-demo-song.mp3'
+filename = '/vanderbiltCS/SyBBURE/SU23/Owl-City-Fireflies-m8.mp3'
 #extracting data from note finder file 
 muzart = nf.Muzart(file=filename)
 #array of arrays ['note', string, intensity, duration]
