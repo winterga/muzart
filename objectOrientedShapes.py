@@ -106,7 +106,7 @@ class Shape(ABC):
     # self.xCoor = 0
     # self.timePerSlice = 0.01 #added radial length every slice
     # self.shapeDif = int((round(self.duration*30))/2)
-    # self.fps = 36
+    # self.fps = 33 or 34
     # self.frame_time = 1/self.fps # 0.1 for 10 fps 
 
     self.rad = 15
@@ -115,7 +115,7 @@ class Shape(ABC):
     self.xCoor = 0
     self.timePerSlice = 0.01 #added radial length every slice
     self.shapeDif = int((round(self.duration*30))/2)
-    self.fps = 36
+    self.fps = 34
     self.frame_time = 1/self.fps # 0.1 for 10 fps 
 
     #cover shapes previously drawn; allows for visuals to appear smooth and not leave traces behind

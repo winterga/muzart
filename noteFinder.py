@@ -122,23 +122,26 @@ class Muzart:
         self.noteTimeCountList = []
         
     def run(self):
+        # def normalize(decibelPower):
+        noteIncrement = 0.1
+
         freqInfo = self.spec.getMaxFrequency(self.rangeArray[0],self.rangeArray[1])
         note = self.noteTranslator.note(freqInfo[1])
         prevNote = note
-        noteDuration = 0.1
+        noteDuration = noteIncrement
         curDecibel = freqInfo[0]
         curMaxDecibel = curDecibel
         for i in range(2,self.rangeArray.size):
             freqInfo = self.spec.getMaxFrequency(self.rangeArray[i-1],self.rangeArray[i])
             note = self.noteTranslator.note(freqInfo[1])
             if (note[0] == prevNote[0] or abs(freqInfo[0]-curDecibel) < 1000):
-                noteDuration += 0.1
+                noteDuration += noteIncrement
                 curDecibel = freqInfo[0]
             else:
                 self.noteList.append([prevNote,curMaxDecibel,noteDuration])
                 curMaxDecibel = freqInfo[0]
                 prevNote = note
-                noteDuration = 0.1
+                noteDuration = noteIncrement
 
         self.noteList.append([prevNote,curMaxDecibel,noteDuration])
 
@@ -146,9 +149,21 @@ class Muzart:
         decibelList = []
         for i in range(len(self.noteList)):
             decibelList.append(self.noteList[i][1])
+        mean_power = np.mean(decibelList)
+        std_power = np.std(decibelList)
+
+        std_value = 0.25
+        
+        decibelList = np.where(decibelList > mean_power + std_value*std_power, mean_power + std_value*std_power, decibelList)
+
+        if mean_power - std_value*std_power > 0:
+            decibelList = np.where(decibelList < mean_power - std_value*std_power, mean_power - std_value*std_power, decibelList)
+        
         max_power = max(decibelList)
         min_power = min(decibelList)
         normalized = [(x-min_power)/(max_power-min_power) for x in decibelList]
+
+        
 
         # add all normalized values to noteList
         for i in range(len(self.noteList)):
@@ -164,8 +179,8 @@ def options():
     arg = parser.parse_args()
     return arg
 
-# muzart = Muzart(file = '/vanderbiltCS/SyBBURE/SU23/more-complicated-demo-song-2-both-hands.mp3')
-# print(muzart.run())
+# muzart = Muzart(file = '/vanderbiltCS/SyBBURE/SU23/Owl-City-Fireflies-m8.mp3')
+# muzart.run()
 
 
 # def main():
